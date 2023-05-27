@@ -26,6 +26,18 @@ public class ComputerLabs {
         }
     }
 
+    // Make sure the user enters a five-digit number
+    private static int getUserIdFromPrompt(String prompt) {
+        while (true) {
+            int userId = getIntFromPrompt(prompt);
+            if (userId < 10000 || userId > 99999) {
+                System.out.print("Make sure you enter a number between 10000 and 99999. ");
+            } else {
+                return userId;
+            }
+        }
+    }
+
     private static String searchForUser(int userId) {
         for (int labNo = 0; labNo < labsAndStations.length; labNo++) {
             for (int stationNo = 0; stationNo < labsAndStations[labNo].length; stationNo++) {
@@ -84,8 +96,8 @@ public class ComputerLabs {
                     System.exit(0);
                     break;
                 case 1:
-                    // TODO: Error checking (case 2 (and 3?), too)
-                    inputUserId = getIntFromPrompt("Enter the five-digit ID number of the user logging in: ");
+                    // TODO: Error checking lab, stn # (case 2 too)
+                    inputUserId = getUserIdFromPrompt("Enter the five-digit ID number of the user logging in: ");
                     inputLab = getIntFromPrompt("Enter the lab number the user is logging in from (1-4): ");
                     inputStation = getIntFromPrompt("Enter the computer station number the user is logging into (1-6): ");
                     labsAndStations[inputLab - 1][inputStation - 1] = inputUserId;
@@ -96,7 +108,7 @@ public class ComputerLabs {
                     labsAndStations[inputLab - 1][inputStation - 1] = 0;
                     break;
                 case 3:
-                    inputUserId = getIntFromPrompt("Enter the five-digit ID number of the user to find: ");
+                    inputUserId = getUserIdFromPrompt("Enter the five-digit ID number of the user to find: ");
                     System.out.println(searchForUser(inputUserId));
                     break;
                 default:
