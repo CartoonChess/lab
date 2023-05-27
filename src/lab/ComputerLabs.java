@@ -26,18 +26,38 @@ public class ComputerLabs {
         }
     }
 
-    // Make sure the user enters a five-digit number
-    private static int getUserIdFromPrompt(String prompt) {
+    // Make sure the user enters an integer within a certain range
+    private static int getIntInRangeFromPrompt(String prompt, int min, int max) {
         while (true) {
-            int userId = getIntFromPrompt(prompt);
-            if (userId < 10000 || userId > 99999) {
-                System.out.print("Make sure you enter a number between 10000 and 99999. ");
+            int input = getIntFromPrompt(prompt);
+            if (input < min || input > max) {
+                System.out.print("Make sure you enter a number between " + min + " and " + max + ". ");
             } else {
-                return userId;
+                return input;
             }
         }
     }
 
+    // Make sure the user enters valid lab, station, and user ID numbers
+
+    private static int getLabNoFromPrompt(String prompt) {
+        return getIntInRangeFromPrompt(prompt, 1, 4);
+    }
+
+    private static int getStationNoFromPrompt(String prompt, int stationCount) {
+        return getIntInRangeFromPrompt(prompt, 1, stationCount);
+    }
+
+    private static int getUserIdFromPrompt(String prompt) {
+        return getIntInRangeFromPrompt(prompt, 10000, 99999);
+    }
+
+    // Get total number of stations in a given lab
+    private static int stationCountInLab(int labNo) {
+        return labsAndStations[labNo - 1].length;
+    }
+
+    // Find user by ID
     private static String searchForUser(int userId) {
         for (int labNo = 0; labNo < labsAndStations.length; labNo++) {
             for (int stationNo = 0; stationNo < labsAndStations[labNo].length; stationNo++) {
@@ -55,6 +75,7 @@ public class ComputerLabs {
         int inputLab;
         int inputStation;
         int inputUserId;
+        int userIdAtStation;
 
         // The delimeter allows spaces in user input
         input = new Scanner(System.in).useDelimiter("\n");
@@ -90,22 +111,29 @@ public class ComputerLabs {
 
             int option = getIntFromPrompt("Enter a number to choose an option: ");
 
+            // Perform task based on user selection
             switch(option) {
                 case 0:
                     System.out.print("Goodbye.");
                     System.exit(0);
                     break;
                 case 1:
-                    // TODO: Error checking lab, stn # (case 2 too)
                     inputUserId = getUserIdFromPrompt("Enter the five-digit ID number of the user logging in: ");
-                    inputLab = getIntFromPrompt("Enter the lab number the user is logging in from (1-4): ");
-                    inputStation = getIntFromPrompt("Enter the computer station number the user is logging into (1-6): ");
+                    inputLab = getLabNoFromPrompt("Enter the lab number the user is logging in from (1-4): ");
+                    inputStation = getStationNoFromPrompt("Enter the computer station number the user is logging into (1-" + stationCountInLab(inputLab) + "): ", stationCountInLab(inputLab));
                     labsAndStations[inputLab - 1][inputStation - 1] = inputUserId;
+                    System.out.println("User with ID " + inputUserId + " is now logged in.");
                     break;
                 case 2:
-                    inputLab = getIntFromPrompt("Enter the lab number the user is logged in at (1-4): ");
-                    inputStation = getIntFromPrompt("Enter the computer station number the user is logged in at (1-6): ");
-                    labsAndStations[inputLab - 1][inputStation - 1] = 0;
+                    inputLab = getLabNoFromPrompt("Enter the lab number the user is logged in at (1-4): ");
+                    inputStation = getStationNoFromPrompt("Enter the computer station number the user is logged in at (1-" + stationCountInLab(inputLab) + "): ", stationCountInLab(inputLab));
+                    userIdAtStation = labsAndStations[inputLab - 1][inputStation - 1];
+                    if (userIdAtStation == 0) {
+                        System.out.println("There's no one logged in at that station.");
+                    } else {
+                        labsAndStations[inputLab - 1][inputStation - 1] = 0;
+                        System.out.println("Logged out user with ID " + userIdAtStation + ".");
+                    }
                     break;
                 case 3:
                     inputUserId = getUserIdFromPrompt("Enter the five-digit ID number of the user to find: ");
