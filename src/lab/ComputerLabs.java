@@ -5,6 +5,13 @@ import java.util.Scanner;
 public class ComputerLabs {
     private static Scanner input;
 
+    private static int[][] labsAndStations = {
+        {0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0},
+        {0, 0, 0},
+    };
+
     // Make sure the user enters an integer
     private static int getIntFromPrompt(String prompt) {
         while (true) {
@@ -19,28 +26,23 @@ public class ComputerLabs {
         }
     }
 
-    public static void main(String[] args) {
-        // Initialize multidimensional array with no users logged in
-        String empty = "_____";
+    private static String searchForUser(int userId) {
+        for (int labNo = 0; labNo < labsAndStations.length; labNo++) {
+            for (int stationNo = 0; stationNo < labsAndStations[labNo].length; stationNo++) {
+                if (labsAndStations[labNo][stationNo] == userId) {
+                    return "User with ID " + userId + " is logged in at lab " + (labNo + 1) + ", station " + (stationNo + 1) + ".";
+                }
+            }
+        }
+        // If there are no matches, say so
+        return "User with ID " + userId + " is logged off or doesn't exist.";
+    }
 
+    public static void main(String[] args) {
         // Vars that will get used repeatedly
         int inputLab;
         int inputStation;
         int inputUserId;
-
-        // String[][] labsAndStations = {
-        //     {empty, empty, empty, empty, empty},
-        //     {empty, empty, empty, empty, empty, empty},
-        //     {empty, empty, empty, empty},
-        //     {empty, empty, empty},
-        // };
-
-        int[][] labsAndStations = {
-            {0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0},
-            {0, 0, 0},
-        };
 
         // The delimeter allows spaces in user input
         input = new Scanner(System.in).useDelimiter("\n");
@@ -52,9 +54,15 @@ public class ComputerLabs {
             System.out.println("LAB STATUS");
             System.out.println("Lab #\tComputer Stations");
             for (int labNo = 0; labNo < labsAndStations.length; labNo++) {
-                System.out.print(labNo + 1 + "\t");
+                System.out.print((labNo + 1) + "\t");
                 for (int stationNo = 0; stationNo < labsAndStations[labNo].length; stationNo++) {
-                    System.out.print(stationNo + 1 + ": " + labsAndStations[labNo][stationNo] + "  ");
+                    String userId;
+                    if (labsAndStations[labNo][stationNo] == 0) {
+                        userId = "_____";
+                    } else {
+                        userId = Integer.toString(labsAndStations[labNo][stationNo]);
+                    }
+                    System.out.print((stationNo + 1) + ": " + userId + "  ");
                 }
                 System.out.println("");
             }
@@ -76,6 +84,7 @@ public class ComputerLabs {
                     System.exit(0);
                     break;
                 case 1:
+                    // TODO: Error checking (case 2 (and 3?), too)
                     inputUserId = getIntFromPrompt("Enter the five-digit ID number of the user logging in: ");
                     inputLab = getIntFromPrompt("Enter the lab number the user is logging in from (1-4): ");
                     inputStation = getIntFromPrompt("Enter the computer station number the user is logging into (1-6): ");
@@ -87,6 +96,8 @@ public class ComputerLabs {
                     labsAndStations[inputLab - 1][inputStation - 1] = 0;
                     break;
                 case 3:
+                    inputUserId = getIntFromPrompt("Enter the five-digit ID number of the user to find: ");
+                    System.out.println(searchForUser(inputUserId));
                     break;
                 default:
                     System.out.println("Invalid input. Please try again.");
